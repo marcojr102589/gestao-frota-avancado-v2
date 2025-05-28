@@ -1,46 +1,23 @@
 {% extends "base.html" %}
-{% block title %}Devolução{% endblock %}
 {% block content %}
-<h2>Devolução de Veículo</h2>
-
-<form method="post" action="/devolucao" enctype="multipart/form-data">
-    <div class="mb-3">
-        <label for="placa" class="form-label">Placa do Veículo</label>
-        <input type="text" class="form-control" id="placa" name="placa" required>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Veículo apresentou problema?</label>
-        <select name="problema" class="form-select">
-            <option value="Não">Não</option>
-            <option value="Sim">Sim</option>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Veículo está limpo?</label>
-        <select name="limpo" class="form-select">
-            <option value="Sim">Sim</option>
-            <option value="Não">Não</option>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Veículo está abastecido?</label>
-        <select name="abastecido" class="form-select">
-            <option value="Sim">Sim</option>
-            <option value="Não">Não</option>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label for="observacao" class="form-label">Observações</label>
-        <textarea name="observacao" class="form-control" id="observacao" rows="3"></textarea>
-    </div>
-    <div class="mb-3">
-        <label for="foto" class="form-label">Foto do veículo (opcional)</label>
-        <input type="file" class="form-control" id="foto" name="foto" accept="image/*">
-    </div>
-    <button type="submit" class="btn btn-warning">Confirmar Devolução</button>
+<h2>Devolução</h2>
+<form method="post">
+    <label>Placa do veículo:</label>
+    <input name="placa" required><br>
+    <label>Apresentou problema?</label>
+    <select name="problema">
+        <option>Não</option><option>Sim</option>
+    </select><br>
+    <label>Está limpo?</label>
+    <select name="limpo">
+        <option>Sim</option><option>Não</option>
+    </select><br>
+    <label>Abastecido?</label>
+    <select name="abastecido">
+        <option>Sim</option><option>Não</option>
+    </select><br>
+    <label>Observações:</label>
+    <textarea name="observacoes"></textarea><br>
+    <button type="submit">Devolver</button>
 </form>
-
-{% if mensagem %}
-<div class="alert alert-info mt-3">{{ mensagem }}</div>
-{% endif %}
 {% endblock %}

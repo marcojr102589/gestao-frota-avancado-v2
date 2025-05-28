@@ -1,44 +1,20 @@
 {% extends "base.html" %}
-{% block title %}Reserva de Veículo{% endblock %}
 {% block content %}
 <h2>Reserva de Veículo</h2>
-
-{% if mensagem %}
-<div class="alert alert-success">{{ mensagem }}</div>
-{% endif %}
-
-{% if veiculos_disponiveis %}
-<form method="post" action="/reserva">
-    <div class="mb-3">
-        <label for="nome_usuario" class="form-label">Seu nome</label>
-        <input type="text" class="form-control" id="nome_usuario" name="nome_usuario" required>
-    </div>
-    <div class="mb-3">
-        <label for="veiculo_id" class="form-label">Escolha um veículo</label>
-        <select class="form-select" id="veiculo_id" name="veiculo_id" required>
-            {% for veiculo in veiculos_disponiveis %}
-            <option value="{{ veiculo.id }}">{{ veiculo.modelo }} - Placa {{ veiculo.placa }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="mb-3">
-        <label for="data_retirada" class="form-label">Data da Retirada</label>
-        <input type="datetime-local" class="form-control" id="data_retirada" name="data_retirada" required>
-    </div>
-    <div class="mb-3">
-        <label for="data_devolucao" class="form-label">Data da Devolução</label>
-        <input type="datetime-local" class="form-control" id="data_devolucao" name="data_devolucao" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Reservar</button>
+<form method="post">
+    <label>Nome:</label>
+    <input name="nome_usuario" required><br>
+    <label>Veículo:</label>
+    <select name="veiculo_id">
+        {% for v in veiculos_disponiveis %}
+        <option value="{{ v.id }}">{{ v.modelo }} - {{ v.placa }}</option>
+        {% endfor %}
+    </select><br>
+    <label>Data retirada:</label>
+    <input type="datetime-local" name="data_retirada"><br>
+    <label>Data devolução:</label>
+    <input type="datetime-local" name="data_devolucao"><br>
+    <button type="submit">Reservar</button>
 </form>
-{% else %}
-<div class="alert alert-warning">
-    Nenhum veículo disponível no momento. Redirecionando para a lista de pré-reservas...
-</div>
-<script>
-    setTimeout(function() {
-        window.location.href = "/prereservas";
-    }, 3000);
-</script>
-{% endif %}
+{% if mensagem %}<p>{{ mensagem }}</p>{% endif %}
 {% endblock %}
