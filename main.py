@@ -3,6 +3,9 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
+from sqlalchemy.orm import Session
+from database.database import criar_tabelas, SessionLocal
+from models.models import Veiculo
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="segredo_super_seguro")
@@ -14,6 +17,20 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 def gestor_autenticado(request: Request):
     return request.session.get("autenticado") == True
 
+# Criar tabelas ao iniciar
+@app.on_event("startup")
+def startup():
+    criar_tabelas()
+
+# Sessão de banco por rota
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# Rotas
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
@@ -46,6 +63,13 @@ async def cadastro_veiculo(request: Request):
         return RedirectResponse("/login")
     return templates.TemplateResponse("cadastro_veiculo.html", {"request": request})
 
+@app.post("/cadastro")
+async def salvar_veiculo(modelo: str = Form(...), placa: str = Form(...), db: Session = Depends(get_db)):
+    novo = Veiculo(modelo=modelo, placa=placa)
+    db.add(novo)
+    db.commit()
+    return {"mensagem": "Veículo cadastrado com sucesso"}
+
 @app.get("/reserva", response_class=HTMLResponse)
 async def reserva(request: Request):
     return templates.TemplateResponse("reserva.html", {"request": request})
@@ -65,27 +89,3 @@ async def editar(request: Request):
     if not gestor_autenticado(request):
         return RedirectResponse("/login")
     return templates.TemplateResponse("editar_prereserva.html", {"request": request})
-from database.database import criar_tabelas, SessionLocal
-from sqlalchemy.orm import Session
-from fastapi import Depends
-
-# Cria as tabelas automaticamente ao iniciar o app
-@app.on_event("startup")
-def startup():
-    criar_tabelas()
-
-# Injeção de dependência para obter conexão com o banco
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-from models.models import Veiculo
-
-@app.post("/cadastro")
-async def salvar_veiculo(modelo: str = Form(...), placa: str = Form(...), db: Session = Depends(get_db)):
-    novo = Veiculo(modelo=modelo, placa=placa)
-    db.add(novo)
-    db.commit()
-    return {"mensagem": "Veículo cadastrado com sucesso"}
