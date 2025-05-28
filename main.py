@@ -105,7 +105,7 @@ async def exportar_reservas(db: Session = Depends(get_db)):
 
 async def reserva(request: Request, db: Session = Depends(get_db)):
     subquery = db.query(Reserva.veiculo_id).filter(Reserva.devolvido == False).subquery()
-    veiculos_disponiveis = db.query(Veiculo).filter(Veiculo.id.notin_(subquery), Veiculo.ativo == True).all()
+    veiculos_disponiveis = db.query(Veiculo).filter(Veiculo.id.notin_(subquery), Veiculo.ativo == True, Veiculo.em_manutencao == False).all()
 
     if not veiculos_disponiveis:
         return templates.TemplateResponse("reserva.html", {"request": request, "veiculos_disponiveis": []})
@@ -116,7 +116,7 @@ async def reserva(request: Request, db: Session = Depends(get_db)):
     })
 
     subquery = db.query(Reserva.veiculo_id).filter(Reserva.devolvido == False).subquery()
-    veiculos_disponiveis = db.query(Veiculo).filter(Veiculo.id.notin_(subquery), Veiculo.ativo == True).all()
+    veiculos_disponiveis = db.query(Veiculo).filter(Veiculo.id.notin_(subquery), Veiculo.ativo == True, Veiculo.em_manutencao == False).all()
 
     if not veiculos_disponiveis:
         return templates.TemplateResponse("reserva.html", {"request": request, "veiculos_disponiveis": []})
@@ -247,4 +247,31 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
         "total_devolvidas": total_devolvidas,
         "labels": labels,
         "valores": valores
+    })
+
+
+@app.get("/manutencao", response_class=HTMLResponse)
+async def gerenciar_manutencao(request: Request, db: Session = Depends(get_db)):
+    if not request.session.get("autenticado"):
+        return RedirectResponse("/login")
+    veiculos = db.query(Veiculo).all()
+    return templates.TemplateResponse("manutencao.html", {"request": request, "veiculos": veiculos})
+
+@app.post("/manutencao", response_class=HTMLResponse)
+async def atualizar_manutencao(request: Request, veiculo_id: int = Form(...), status: str = Form(...), db: Session = Depends(get_db)):
+    veiculo = db.query(Veiculo).filter(Veiculo.id == veiculo_id).first()
+    if veiculo:
+        veiculo.em_manutencao = True if status == "sim" else False
+        db.commit()
+    return RedirectResponse("/manutencao", status_code=302)
+
+
+@app.get("/gestao-prereservas", response_class=HTMLResponse)
+async def gestao_prereservas(request: Request, db: Session = Depends(get_db)):
+    if not request.session.get("autenticado"):
+        return RedirectResponse("/login")
+    reservas = db.query(Reserva).order_by(Reserva.id.desc()).all()
+    return templates.TemplateResponse("gestao_prereservas.html", {
+        "request": request,
+        "reservas": reservas
     })

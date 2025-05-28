@@ -17,6 +17,7 @@ class Veiculo(Base):
     placa = Column(String, unique=True, nullable=False)
     modelo = Column(String, nullable=False)
     ativo = Column(Boolean, default=True)
+    em_manutencao = Column(Boolean, default=False)
 
 class Reserva(Base):
     __tablename__ = 'reservas'

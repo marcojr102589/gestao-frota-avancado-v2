@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Gestão de Manutenção{% endblock %}
+{% block content %}
+<h2>Veículos em Manutenção</h2>
+<form method="post" action="/manutencao">
+    <div class="mb-3">
+        <label for="veiculo_id" class="form-label">Selecione o Veículo</label>
+        <select name="veiculo_id" id="veiculo_id" class="form-select">
+            {% for veiculo in veiculos %}
+            <option value="{{ veiculo.id }}">
+                {{ veiculo.modelo }} - {{ veiculo.placa }} {% if veiculo.em_manutencao %}(Em Manutenção){% endif %}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="status" class="form-label">Marcar como em manutenção?</label>
+        <select name="status" id="status" class="form-select">
+            <option value="sim">Sim</option>
+            <option value="nao">Não</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-warning">Atualizar</button>
+</form>
+{% endblock %}
