@@ -275,3 +275,7 @@ async def gestao_prereservas(request: Request, db: Session = Depends(get_db)):
         "request": request,
         "reservas": reservas
     })
+@app.on_event("startup")
+def startup_event():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
