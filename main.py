@@ -52,6 +52,8 @@ async def logout(request: Request):
 async def dashboard(request: Request, db: Session = Depends(get_db)):
     if not request.session.get("usuario_id"):
         return RedirectResponse("/login")
+    if not request.session.get("usuario_id"):
+        return RedirectResponse("/login")
 
     total_veiculos = db.query(Veiculo).count()
     reservas = db.query(Reserva).all()
@@ -81,6 +83,8 @@ async def dashboard(request: Request):
 
 @app.get("/cadastro", response_class=HTMLResponse)
 async def cadastro_veiculo(request: Request):
+    if not request.session.get("usuario_id"):
+        return RedirectResponse("/login")
     if not gestor_autenticado(request):
         return RedirectResponse("/login")
     return templates.TemplateResponse("cadastro_veiculo.html", {"request": request})
@@ -126,6 +130,8 @@ async def prereservas(request: Request, db: Session = Depends(get_db)):
 
 @app.get("/prereservas/editar", response_class=HTMLResponse)
 async def editar(request: Request):
+    if not request.session.get("usuario_id"):
+        return RedirectResponse("/login")
     if not gestor_autenticado(request):
         return RedirectResponse("/login")
     return templates.TemplateResponse("editar_prereserva.html", {"request": request})
@@ -238,6 +244,8 @@ async def prereservas(request: Request, data_inicio: str = "", data_fim: str = "
 
 @app.get("/exportar")
 async def exportar_reservas(db: Session = Depends(get_db)):
+    if not request.session.get("usuario_id"):
+        return RedirectResponse("/login")
     reservas = db.query(Reserva).all()
     data = [{
         "ID": r.id,
