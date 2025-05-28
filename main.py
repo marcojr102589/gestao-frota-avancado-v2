@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy.orm import Session
 from database.database import criar_tabelas, SessionLocal
-from models.models import Veiculo
+from models.models import Veiculo, Reserva
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="segredo_super_seguro")
@@ -13,7 +13,6 @@ app.add_middleware(SessionMiddleware, secret_key="segredo_super_seguro")
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Autenticação
 def gestor_autenticado(request: Request):
     return request.session.get("autenticado") == True
 
@@ -72,20 +71,30 @@ async def salvar_veiculo(request: Request, modelo: str = Form(...), placa: str =
 
 @app.get("/reserva", response_class=HTMLResponse)
 async def reserva(request: Request):
-    return templates.TemplateResponse("reserva.html", {"request": request, "mensagem": "Formulário de reserva disponível"})
+    return templates.TemplateResponse("reserva.html", {"request": request})
+
+@app.post("/reserva", response_class=HTMLResponse)
+async def reservar_veiculo(request: Request, nome_usuario: str = Form(...), veiculo_id: int = Form(...), db: Session = Depends(get_db)):
+    nova = Reserva(nome_usuario=nome_usuario, veiculo_id=veiculo_id)
+    db.add(nova)
+    db.commit()
+    return templates.TemplateResponse("reserva.html", {
+        "request": request,
+        "mensagem": "Reserva registrada com sucesso"
+    })
 
 @app.get("/devolucao", response_class=HTMLResponse)
 async def devolucao(request: Request):
-    return templates.TemplateResponse("devolucao.html", {"request": request, "mensagem": "Formulário de devolução ativo"})
+    return templates.TemplateResponse("devolucao.html", {"request": request})
 
 @app.get("/prereservas", response_class=HTMLResponse)
 async def prereservas(request: Request):
     if not gestor_autenticado(request):
         return RedirectResponse("/login")
-    return templates.TemplateResponse("listar_prereservas.html", {"request": request, "mensagem": "Reservas em breve serão listadas aqui."})
+    return templates.TemplateResponse("listar_prereservas.html", {"request": request})
 
 @app.get("/prereservas/editar", response_class=HTMLResponse)
 async def editar(request: Request):
     if not gestor_autenticado(request):
         return RedirectResponse("/login")
-    return templates.TemplateResponse("editar_prereserva.html", {"request": request, "mensagem": "Página de edição ativa."})
+    return templates.TemplateResponse("editar_prereserva.html", {"request": request})
