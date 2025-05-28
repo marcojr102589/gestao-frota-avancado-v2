@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy.orm import Session
-from database.database import criar_tabelas, SessionLocal
+from database.database import SessionLocal, get_db, Base, engine
 from models.models import Veiculo, Reserva
 
 app = FastAPI()
