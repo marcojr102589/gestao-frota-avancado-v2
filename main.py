@@ -65,3 +65,27 @@ async def editar(request: Request):
     if not gestor_autenticado(request):
         return RedirectResponse("/login")
     return templates.TemplateResponse("editar_prereserva.html", {"request": request})
+from database.database import criar_tabelas, SessionLocal
+from sqlalchemy.orm import Session
+from fastapi import Depends
+
+# Cria as tabelas automaticamente ao iniciar o app
+@app.on_event("startup")
+def startup():
+    criar_tabelas()
+
+# Injeção de dependência para obter conexão com o banco
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+from models.models import Veiculo
+
+@app.post("/cadastro")
+async def salvar_veiculo(modelo: str = Form(...), placa: str = Form(...), db: Session = Depends(get_db)):
+    novo = Veiculo(modelo=modelo, placa=placa)
+    db.add(novo)
+    db.commit()
+    return {"mensagem": "Veículo cadastrado com sucesso"}
