@@ -201,3 +201,50 @@ async def salvar_veiculo(request: Request, modelo: str = Form(...), placa: str =
         "request": request,
         "mensagem": "Veículo cadastrado com sucesso"
     })
+
+
+@app.post("/reserva", response_class=HTMLResponse)
+async def reservar_veiculo(
+    request: Request,
+    nome_usuario: str = Form(...),
+    veiculo_id: int = Form(...),
+    data_retirada: str = Form(...),
+    data_devolucao: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    nova = Reserva(
+        nome_usuario=nome_usuario,
+        veiculo_id=veiculo_id,
+        data_reserva=datetime.utcnow(),
+        devolvido=False
+    )
+    db.add(nova)
+    db.commit()
+    return templates.TemplateResponse("reserva.html", {
+        "request": request,
+        "mensagem": "Reserva registrada com sucesso",
+        "veiculos_disponiveis": []
+    })
+
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard(request: Request, db: Session = Depends(get_db)):
+    if not request.session.get("autenticado"):
+        return RedirectResponse("/login")
+    total_veiculos = db.query(Veiculo).count()
+    reservas = db.query(Reserva).all()
+    total_reservas = len(reservas)
+    total_devolvidas = sum([1 for r in reservas if r.devolvido])
+    contagem = {}
+    for r in reservas:
+        contagem[r.veiculo_id] = contagem.get(r.veiculo_id, 0) + 1
+    labels = [f"Veículo {vid}" for vid in contagem.keys()]
+    valores = list(contagem.values())
+    return templates.TemplateResponse("dashboard.html", {
+        "request": request,
+        "total_veiculos": total_veiculos,
+        "total_reservas": total_reservas,
+        "total_devolvidas": total_devolvidas,
+        "labels": labels,
+        "valores": valores
+    })

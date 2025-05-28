@@ -21,6 +21,14 @@
             {% endfor %}
         </select>
     </div>
+    <div class="mb-3">
+        <label for="data_retirada" class="form-label">Data da Retirada</label>
+        <input type="datetime-local" class="form-control" id="data_retirada" name="data_retirada" required>
+    </div>
+    <div class="mb-3">
+        <label for="data_devolucao" class="form-label">Data da Devolução</label>
+        <input type="datetime-local" class="form-control" id="data_devolucao" name="data_devolucao" required>
+    </div>
     <button type="submit" class="btn btn-primary">Reservar</button>
 </form>
 {% else %}
