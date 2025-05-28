@@ -202,7 +202,7 @@ async def criar_usuario(request: Request, nome: str = Form(...), email: str = Fo
 
 @app.post("/login", response_class=HTMLResponse)
 async def login_usuario(request: Request, email: str = Form(...), senha: str = Form(...), db: Session = Depends(get_db)):
-    usuario = db.query(Usuario).filter(Usuario.email == email).first()
+    usuario = db.query(Usuario).filter(Usuario.email == email.strip()).first()
     if not usuario or not bcrypt.verify(senha, usuario.senha_hash):
         return templates.TemplateResponse("login.html", {"request": request, "erro": "Usuário ou senha inválidos."})
     request.session["usuario_id"] = usuario.id
