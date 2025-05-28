@@ -184,3 +184,20 @@ async def confirmar_devolucao(
 async def prereservar(request: Request, nome_usuario: str = Form(...), origem: str = Form(...), destino: str = Form(...), data_hora: str = Form(...)):
     mensagem = f"Pré-reserva registrada para {nome_usuario} de {origem} para {destino} às {data_hora}"
     return templates.TemplateResponse("listar_prereservas.html", {"request": request, "mensagem": mensagem, "reservas": [], "gestor": False})
+
+
+@app.get("/cadastro", response_class=HTMLResponse)
+async def cadastro_veiculo(request: Request):
+    if not request.session.get("autenticado"):
+        return RedirectResponse("/login")
+    return templates.TemplateResponse("cadastro_veiculo.html", {"request": request})
+
+@app.post("/cadastro", response_class=HTMLResponse)
+async def salvar_veiculo(request: Request, modelo: str = Form(...), placa: str = Form(...), db: Session = Depends(get_db)):
+    novo = Veiculo(modelo=modelo, placa=placa)
+    db.add(novo)
+    db.commit()
+    return templates.TemplateResponse("cadastro_veiculo.html", {
+        "request": request,
+        "mensagem": "Veículo cadastrado com sucesso"
+    })
