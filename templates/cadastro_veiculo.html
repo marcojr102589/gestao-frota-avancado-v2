@@ -2,6 +2,11 @@
 {% block title %}Cadastro de Veículo{% endblock %}
 {% block content %}
 <h2>Cadastro de Veículo</h2>
+
+{% if mensagem %}
+<div class="alert alert-success">{{ mensagem }}</div>
+{% endif %}
+
 <form method="post" action="/cadastro">
     <div class="mb-3">
         <label for="modelo" class="form-label">Modelo</label>

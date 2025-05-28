@@ -1,6 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Editar Pré-Reserva{% endblock %}
+{% block title %}Editar Reserva{% endblock %}
 {% block content %}
 <h2>Editar Pré-Reserva</h2>
-<p>Funcionalidade de edição em breve...</p>
+{% if mensagem %}
+<div class="alert alert-info">{{ mensagem }}</div>
+{% endif %}
+<p>Página de edição de reserva ativa. Formulário de edição será incluído aqui.</p>
 {% endblock %}

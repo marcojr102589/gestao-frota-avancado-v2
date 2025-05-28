@@ -1,6 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Reserva de Veículo{% endblock %}
+{% block title %}Reserva{% endblock %}
 {% block content %}
 <h2>Reserva de Veículo</h2>
-<p>Formulário de reserva em breve...</p>
+{% if mensagem %}
+<div class="alert alert-info">{{ mensagem }}</div>
+{% endif %}
+<p>Aqui você poderá reservar um veículo. Em breve com formulário funcional.</p>
 {% endblock %}

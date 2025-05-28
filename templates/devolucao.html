@@ -1,6 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Devolução de Veículo{% endblock %}
+{% block title %}Devolução{% endblock %}
 {% block content %}
 <h2>Devolução de Veículo</h2>
-<p>Formulário de devolução em breve...</p>
+{% if mensagem %}
+<div class="alert alert-info">{{ mensagem }}</div>
+{% endif %}
+<p>Formulário para devolução de veículos estará aqui.</p>
 {% endblock %}

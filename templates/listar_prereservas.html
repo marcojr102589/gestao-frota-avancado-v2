@@ -2,5 +2,12 @@
 {% block title %}Pré-Reservas{% endblock %}
 {% block content %}
 <h2>Lista de Pré-Reservas</h2>
-<p>Lista de reservas em breve...</p>
+{% if mensagem %}
+<div class="alert alert-info">{{ mensagem }}</div>
+{% endif %}
+<ul class="list-group">
+    <li class="list-group-item">Reserva 01 - Usuário A</li>
+    <li class="list-group-item">Reserva 02 - Usuário B</li>
+    <li class="list-group-item">Reserva 03 - Usuário C</li>
+</ul>
 {% endblock %}
