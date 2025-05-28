@@ -2,12 +2,35 @@
 {% block title %}Pré-Reservas{% endblock %}
 {% block content %}
 <h2>Lista de Pré-Reservas</h2>
-{% if mensagem %}
-<div class="alert alert-info">{{ mensagem }}</div>
+
+<form method="get" class="row row-cols-lg-auto g-3 align-items-center mb-4">
+    <div class="col">
+        <label for="data_inicio" class="form-label">Data Início</label>
+        <input type="date" class="form-control" id="data_inicio" name="data_inicio" value="{{ data_inicio }}">
+    </div>
+    <div class="col">
+        <label for="data_fim" class="form-label">Data Fim</label>
+        <input type="date" class="form-control" id="data_fim" name="data_fim" value="{{ data_fim }}">
+    </div>
+    <div class="col">
+        <button type="submit" class="btn btn-primary mt-4">Filtrar</button>
+        <a href="/exportar" class="btn btn-success mt-4">Exportar Excel</a>
+    </div>
+</form>
+
+{% if reservas %}
+    <ul class="list-group">
+        {% for reserva in reservas %}
+        <li class="list-group-item">
+            <strong>ID:</strong> {{ reserva.id }} |
+            <strong>Usuário:</strong> {{ reserva.nome_usuario }} |
+            <strong>Veículo:</strong> {{ reserva.veiculo_id }} |
+            <strong>Data:</strong> {{ reserva.data_reserva.strftime('%d/%m/%Y %H:%M') }} |
+            <strong>Devolvido:</strong> {{ 'Sim' if reserva.devolvido else 'Não' }}
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Nenhuma reserva encontrada.</p>
 {% endif %}
-<ul class="list-group">
-    <li class="list-group-item">Reserva 01 - Usuário A</li>
-    <li class="list-group-item">Reserva 02 - Usuário B</li>
-    <li class="list-group-item">Reserva 03 - Usuário C</li>
-</ul>
 {% endblock %}

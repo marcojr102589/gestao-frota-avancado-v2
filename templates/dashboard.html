@@ -2,46 +2,81 @@
 {% block title %}Dashboard{% endblock %}
 {% block content %}
 <h2 class="mb-4"><i class="bi bi-speedometer2"></i> Dashboard</h2>
-<div class="row g-4">
-  <div class="col-md-6 col-lg-3">
-    <a href="/cadastro" class="text-decoration-none">
-      <div class="card text-bg-primary h-100 shadow-sm text-center">
-        <div class="card-body">
-          <i class="bi bi-truck fs-1"></i>
-          <h5 class="card-title mt-2">Cadastrar Veículo</h5>
-        </div>
+
+<div class="row text-center mb-4">
+  <div class="col-md-4">
+    <div class="card shadow-sm bg-primary text-white">
+      <div class="card-body">
+        <h5>Total de Veículos</h5>
+        <h2>{{ total_veiculos }}</h2>
       </div>
-    </a>
+    </div>
   </div>
-  <div class="col-md-6 col-lg-3">
-    <a href="/reserva" class="text-decoration-none">
-      <div class="card text-bg-success h-100 shadow-sm text-center">
-        <div class="card-body">
-          <i class="bi bi-calendar-check fs-1"></i>
-          <h5 class="card-title mt-2">Reservar Veículo</h5>
-        </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm bg-success text-white">
+      <div class="card-body">
+        <h5>Total de Reservas</h5>
+        <h2>{{ total_reservas }}</h2>
       </div>
-    </a>
+    </div>
   </div>
-  <div class="col-md-6 col-lg-3">
-    <a href="/devolucao" class="text-decoration-none">
-      <div class="card text-bg-warning h-100 shadow-sm text-center">
-        <div class="card-body">
-          <i class="bi bi-arrow-repeat fs-1"></i>
-          <h5 class="card-title mt-2">Devolver Veículo</h5>
-        </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm bg-warning text-white">
+      <div class="card-body">
+        <h5>Devoluções Realizadas</h5>
+        <h2>{{ total_devolvidas }}</h2>
       </div>
-    </a>
-  </div>
-  <div class="col-md-6 col-lg-3">
-    <a href="/prereservas" class="text-decoration-none">
-      <div class="card text-bg-info h-100 shadow-sm text-center">
-        <div class="card-body">
-          <i class="bi bi-list-task fs-1"></i>
-          <h5 class="card-title mt-2">Ver Reservas</h5>
-        </div>
-      </div>
-    </a>
+    </div>
   </div>
 </div>
+
+<div class="row">
+  <div class="col-md-6">
+    <canvas id="graficoBarras"></canvas>
+  </div>
+  <div class="col-md-6">
+    <canvas id="graficoPizza"></canvas>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctxBar = document.getElementById('graficoBarras');
+const ctxPie = document.getElementById('graficoPizza');
+
+new Chart(ctxBar, {
+  type: 'bar',
+  data: {
+    labels: {{ labels | tojson }},
+    datasets: [{
+      label: 'Reservas por Veículo',
+      data: {{ valores | tojson }},
+      backgroundColor: 'rgba(13, 110, 253, 0.7)'
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false }
+    }
+  }
+});
+
+new Chart(ctxPie, {
+  type: 'doughnut',
+  data: {
+    labels: ['Devolvidos', 'Pendentes'],
+    datasets: [{
+      data: [{{ total_devolvidas }}, {{ total_reservas - total_devolvidas }}],
+      backgroundColor: ['#198754', '#dc3545']
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom' }
+    }
+  }
+});
+</script>
 {% endblock %}

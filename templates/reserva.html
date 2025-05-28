@@ -7,15 +7,30 @@
 <div class="alert alert-success">{{ mensagem }}</div>
 {% endif %}
 
+{% if veiculos_disponiveis %}
 <form method="post" action="/reserva">
     <div class="mb-3">
         <label for="nome_usuario" class="form-label">Seu nome</label>
         <input type="text" class="form-control" id="nome_usuario" name="nome_usuario" required>
     </div>
     <div class="mb-3">
-        <label for="veiculo_id" class="form-label">ID do veículo</label>
-        <input type="number" class="form-control" id="veiculo_id" name="veiculo_id" required>
+        <label for="veiculo_id" class="form-label">Escolha um veículo</label>
+        <select class="form-select" id="veiculo_id" name="veiculo_id" required>
+            {% for veiculo in veiculos_disponiveis %}
+            <option value="{{ veiculo.id }}">{{ veiculo.modelo }} - Placa {{ veiculo.placa }}</option>
+            {% endfor %}
+        </select>
     </div>
     <button type="submit" class="btn btn-primary">Reservar</button>
 </form>
+{% else %}
+<div class="alert alert-warning">
+    Nenhum veículo disponível no momento. Redirecionando para a lista de pré-reservas...
+</div>
+<script>
+    setTimeout(function() {
+        window.location.href = "/prereservas";
+    }, 3000);
+</script>
+{% endif %}
 {% endblock %}
