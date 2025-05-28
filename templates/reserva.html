@@ -1,9 +1,21 @@
 {% extends "base.html" %}
-{% block title %}Reserva{% endblock %}
+{% block title %}Reserva de Veículo{% endblock %}
 {% block content %}
 <h2>Reserva de Veículo</h2>
+
 {% if mensagem %}
-<div class="alert alert-info">{{ mensagem }}</div>
+<div class="alert alert-success">{{ mensagem }}</div>
 {% endif %}
-<p>Aqui você poderá reservar um veículo. Em breve com formulário funcional.</p>
+
+<form method="post" action="/reserva">
+    <div class="mb-3">
+        <label for="nome_usuario" class="form-label">Seu nome</label>
+        <input type="text" class="form-control" id="nome_usuario" name="nome_usuario" required>
+    </div>
+    <div class="mb-3">
+        <label for="veiculo_id" class="form-label">ID do veículo</label>
+        <input type="number" class="form-control" id="veiculo_id" name="veiculo_id" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Reservar</button>
+</form>
 {% endblock %}

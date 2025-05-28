@@ -1,9 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Devolução{% endblock %}
 {% block content %}
-<h2>Devolução de Veículo</h2>
+<h2>Devolver Veículo</h2>
+<form method="post" action="/devolucao">
+    <div class="mb-3">
+        <label for="reserva_id" class="form-label">ID da Reserva</label>
+        <input type="number" class="form-control" id="reserva_id" name="reserva_id" required>
+    </div>
+    <button type="submit" class="btn btn-warning">Confirmar Devolução</button>
+</form>
 {% if mensagem %}
-<div class="alert alert-info">{{ mensagem }}</div>
+<div class="alert alert-success mt-3">{{ mensagem }}</div>
 {% endif %}
-<p>Formulário para devolução de veículos estará aqui.</p>
 {% endblock %}

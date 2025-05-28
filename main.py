@@ -88,13 +88,39 @@ async def devolucao(request: Request):
     return templates.TemplateResponse("devolucao.html", {"request": request})
 
 @app.get("/prereservas", response_class=HTMLResponse)
-async def prereservas(request: Request):
+async def prereservas(request: Request, db: Session = Depends(get_db)):
     if not gestor_autenticado(request):
         return RedirectResponse("/login")
-    return templates.TemplateResponse("listar_prereservas.html", {"request": request})
+    reservas = db.query(Reserva).all()
+    return templates.TemplateResponse("listar_prereservas.html", {
+        "request": request,
+        "reservas": reservas
+    })
 
 @app.get("/prereservas/editar", response_class=HTMLResponse)
 async def editar(request: Request):
     if not gestor_autenticado(request):
         return RedirectResponse("/login")
     return templates.TemplateResponse("editar_prereserva.html", {"request": request})
+
+@app.post("/devolucao", response_class=HTMLResponse)
+async def confirmar_devolucao(request: Request, reserva_id: int = Form(...), db: Session = Depends(get_db)):
+    reserva = db.query(Reserva).filter_by(id=reserva_id).first()
+    if reserva:
+        reserva.devolvido = True
+        db.commit()
+        msg = "Devolução confirmada com sucesso."
+    else:
+        msg = "Reserva não encontrada."
+    return templates.TemplateResponse("devolucao.html", {"request": request, "mensagem": msg})
+
+@app.post("/prereservas/editar", response_class=HTMLResponse)
+async def editar_reserva(request: Request, reserva_id: int = Form(...), novo_nome: str = Form(...), db: Session = Depends(get_db)):
+    reserva = db.query(Reserva).filter_by(id=reserva_id).first()
+    if reserva:
+        reserva.nome_usuario = novo_nome
+        db.commit()
+        msg = "Reserva atualizada com sucesso."
+    else:
+        msg = "Reserva não encontrada."
+    return templates.TemplateResponse("editar_prereserva.html", {"request": request, "mensagem": msg})

@@ -2,8 +2,18 @@
 {% block title %}Editar Reserva{% endblock %}
 {% block content %}
 <h2>Editar Pré-Reserva</h2>
+<form method="post" action="/prereservas/editar">
+    <div class="mb-3">
+        <label for="reserva_id" class="form-label">ID da Reserva</label>
+        <input type="number" class="form-control" id="reserva_id" name="reserva_id" required>
+    </div>
+    <div class="mb-3">
+        <label for="novo_nome" class="form-label">Novo nome do usuário</label>
+        <input type="text" class="form-control" id="novo_nome" name="novo_nome" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Atualizar</button>
+</form>
 {% if mensagem %}
-<div class="alert alert-info">{{ mensagem }}</div>
+<div class="alert alert-success mt-3">{{ mensagem }}</div>
 {% endif %}
-<p>Página de edição de reserva ativa. Formulário de edição será incluído aqui.</p>
 {% endblock %}
