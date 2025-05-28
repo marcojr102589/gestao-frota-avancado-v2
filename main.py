@@ -47,7 +47,33 @@ async def logout(request: Request):
     request.session.clear()
     return RedirectResponse("/", status_code=302)
 
+
 @app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard(request: Request, db: Session = Depends(get_db)):
+    if not request.session.get("usuario_id"):
+        return RedirectResponse("/login")
+
+    total_veiculos = db.query(Veiculo).count()
+    reservas = db.query(Reserva).all()
+    total_reservas = len(reservas)
+    total_devolvidas = sum([1 for r in reservas if r.devolvido])
+
+    contagem = {}
+    for r in reservas:
+        contagem[r.veiculo_id] = contagem.get(r.veiculo_id, 0) + 1
+
+    labels = [f"Veículo {vid}" for vid in contagem.keys()]
+    valores = list(contagem.values())
+
+    return templates.TemplateResponse("dashboard.html", {
+        "request": request,
+        "total_veiculos": total_veiculos,
+        "total_reservas": total_reservas,
+        "total_devolvidas": total_devolvidas,
+        "labels": labels,
+        "valores": valores
+    })
+
 async def dashboard(request: Request):
     if not gestor_autenticado(request):
         return RedirectResponse("/login")
@@ -93,6 +119,7 @@ async def prereservas(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse("/login")
     reservas = db.query(Reserva).all()
     return templates.TemplateResponse("listar_prereservas.html", {
+        "gestor": gestor,
         "request": request,
         "reservas": reservas
     })
@@ -103,7 +130,31 @@ async def editar(request: Request):
         return RedirectResponse("/login")
     return templates.TemplateResponse("editar_prereserva.html", {"request": request})
 
+
 @app.post("/devolucao", response_class=HTMLResponse)
+async def confirmar_devolucao(
+    request: Request,
+    placa: str = Form(...),
+    problema: str = Form(...),
+    limpo: str = Form(...),
+    abastecido: str = Form(...),
+    observacao: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    veiculo = db.query(Veiculo).filter(Veiculo.placa == placa).first()
+    if not veiculo:
+        return templates.TemplateResponse("devolucao.html", {"request": request, "mensagem": "Placa não encontrada."})
+
+    reserva = db.query(Reserva).filter(Reserva.veiculo_id == veiculo.id, Reserva.devolvido == False).first()
+    if reserva:
+        reserva.devolvido = True
+        db.commit()
+        msg = "Devolução registrada com sucesso. Checklist: " + f"Problema: {problema}, Limpo: {limpo}, Abastecido: {abastecido}, Obs: {observacao}"
+    else:
+        msg = "Nenhuma reserva ativa para esta placa."
+
+    return templates.TemplateResponse("devolucao.html", {"request": request, "mensagem": msg})
+
 async def confirmar_devolucao(request: Request, reserva_id: int = Form(...), db: Session = Depends(get_db)):
     reserva = db.query(Reserva).filter_by(id=reserva_id).first()
     if reserva:
@@ -164,6 +215,8 @@ from datetime import datetime
 
 @app.get("/prereservas", response_class=HTMLResponse)
 async def prereservas(request: Request, data_inicio: str = "", data_fim: str = "", db: Session = Depends(get_db)):
+    usuario_id = request.session.get("usuario_id")
+    gestor = usuario_id == 1  # Considerar ID 1 como gestor por padrão:
     if not gestor_autenticado(request):
         return RedirectResponse("/login")
 
@@ -176,6 +229,7 @@ async def prereservas(request: Request, data_inicio: str = "", data_fim: str = "
     reservas = query.order_by(Reserva.data_reserva.desc()).all()
 
     return templates.TemplateResponse("listar_prereservas.html", {
+        "gestor": gestor,
         "request": request,
         "reservas": reservas,
         "data_inicio": data_inicio,
@@ -204,6 +258,7 @@ async def exportar_reservas(db: Session = Depends(get_db)):
     })
 
 @app.get("/reserva", response_class=HTMLResponse)
+
 async def reserva(request: Request, db: Session = Depends(get_db)):
     subquery = db.query(Reserva.veiculo_id).filter(Reserva.devolvido == False).subquery()
     veiculos_disponiveis = db.query(Veiculo).filter(Veiculo.id.notin_(subquery), Veiculo.ativo == True).all()
@@ -216,7 +271,42 @@ async def reserva(request: Request, db: Session = Depends(get_db)):
         "veiculos_disponiveis": veiculos_disponiveis
     })
 
+    subquery = db.query(Reserva.veiculo_id).filter(Reserva.devolvido == False).subquery()
+    veiculos_disponiveis = db.query(Veiculo).filter(Veiculo.id.notin_(subquery), Veiculo.ativo == True).all()
+
+    if not veiculos_disponiveis:
+        return templates.TemplateResponse("reserva.html", {"request": request, "veiculos_disponiveis": []})
+
+    return templates.TemplateResponse("reserva.html", {
+        "request": request,
+        "veiculos_disponiveis": veiculos_disponiveis
+    })
+
+
 @app.post("/devolucao", response_class=HTMLResponse)
+async def confirmar_devolucao(
+    request: Request,
+    placa: str = Form(...),
+    problema: str = Form(...),
+    limpo: str = Form(...),
+    abastecido: str = Form(...),
+    observacao: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    veiculo = db.query(Veiculo).filter(Veiculo.placa == placa).first()
+    if not veiculo:
+        return templates.TemplateResponse("devolucao.html", {"request": request, "mensagem": "Placa não encontrada."})
+
+    reserva = db.query(Reserva).filter(Reserva.veiculo_id == veiculo.id, Reserva.devolvido == False).first()
+    if reserva:
+        reserva.devolvido = True
+        db.commit()
+        msg = "Devolução registrada com sucesso. Checklist: " + f"Problema: {problema}, Limpo: {limpo}, Abastecido: {abastecido}, Obs: {observacao}"
+    else:
+        msg = "Nenhuma reserva ativa para esta placa."
+
+    return templates.TemplateResponse("devolucao.html", {"request": request, "mensagem": msg})
+
 async def confirmar_devolucao(
     request: Request,
     placa: str = Form(...),
@@ -245,3 +335,8 @@ async def confirmar_devolucao(
         "request": request,
         "mensagem": msg
     })
+
+@app.post("/prereservas", response_class=HTMLResponse)
+async def prereservar(request: Request, nome_usuario: str = Form(...), origem: str = Form(...), destino: str = Form(...), data_hora: str = Form(...)):
+    mensagem = f"Pré-reserva registrada para {nome_usuario} de {origem} para {destino} às {data_hora}"
+    return templates.TemplateResponse("listar_prereservas.html", {"request": request, "mensagem": mensagem, "reservas": [], "gestor": False})

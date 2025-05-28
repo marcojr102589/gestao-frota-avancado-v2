@@ -3,6 +3,7 @@
 {% block content %}
 <h2>Lista de Pré-Reservas</h2>
 
+{% if gestor %}
 <form method="get" class="row row-cols-lg-auto g-3 align-items-center mb-4">
     <div class="col">
         <label for="data_inicio" class="form-label">Data Início</label>
@@ -17,6 +18,7 @@
         <a href="/exportar" class="btn btn-success mt-4">Exportar Excel</a>
     </div>
 </form>
+{% endif %}
 
 {% if reservas %}
     <ul class="list-group">
@@ -33,4 +35,25 @@
 {% else %}
     <p>Nenhuma reserva encontrada.</p>
 {% endif %}
+
+<h3 class="mt-5">Solicitar Pré-Reserva</h3>
+<form method="post" action="/prereservas">
+    <div class="mb-3">
+        <label for="nome_usuario" class="form-label">Nome</label>
+        <input type="text" class="form-control" name="nome_usuario" required>
+    </div>
+    <div class="mb-3">
+        <label for="origem" class="form-label">Origem</label>
+        <input type="text" class="form-control" name="origem" required>
+    </div>
+    <div class="mb-3">
+        <label for="destino" class="form-label">Destino</label>
+        <input type="text" class="form-control" name="destino" required>
+    </div>
+    <div class="mb-3">
+        <label for="data_hora" class="form-label">Data e Hora</label>
+        <input type="datetime-local" class="form-control" name="data_hora" required>
+    </div>
+    <button type="submit" class="btn btn-outline-primary">Enviar Solicitação</button>
+</form>
 {% endblock %}
