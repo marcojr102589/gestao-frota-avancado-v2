@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Cadastro de Veículo{% endblock %}
+{% block content %}
+<h2>Cadastro de Veículo</h2>
+<form method="post" action="/cadastro">
+    <div class="mb-3">
+        <label for="modelo" class="form-label">Modelo</label>
+        <input type="text" class="form-control" id="modelo" name="modelo" required>
+    </div>
+    <div class="mb-3">
+        <label for="placa" class="form-label">Placa</label>
+        <input type="text" class="form-control" id="placa" name="placa" required>
+    </div>
+    <button type="submit" class="btn btn-success">Salvar</button>
+</form>
+{% endblock %}
