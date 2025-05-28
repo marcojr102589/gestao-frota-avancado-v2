@@ -13,16 +13,14 @@ app.add_middleware(SessionMiddleware, secret_key="segredo_super_seguro")
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Autenticação básica
+# Autenticação
 def gestor_autenticado(request: Request):
     return request.session.get("autenticado") == True
 
-# Criar tabelas ao iniciar
 @app.on_event("startup")
 def startup():
     criar_tabelas()
 
-# Sessão de banco por rota
 def get_db():
     db = SessionLocal()
     try:
@@ -30,7 +28,6 @@ def get_db():
     finally:
         db.close()
 
-# Rotas
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
@@ -63,29 +60,32 @@ async def cadastro_veiculo(request: Request):
         return RedirectResponse("/login")
     return templates.TemplateResponse("cadastro_veiculo.html", {"request": request})
 
-@app.post("/cadastro")
-async def salvar_veiculo(modelo: str = Form(...), placa: str = Form(...), db: Session = Depends(get_db)):
+@app.post("/cadastro", response_class=HTMLResponse)
+async def salvar_veiculo(request: Request, modelo: str = Form(...), placa: str = Form(...), db: Session = Depends(get_db)):
     novo = Veiculo(modelo=modelo, placa=placa)
     db.add(novo)
     db.commit()
-    return {"mensagem": "Veículo cadastrado com sucesso"}
+    return templates.TemplateResponse("cadastro_veiculo.html", {
+        "request": request,
+        "mensagem": "Veículo cadastrado com sucesso"
+    })
 
 @app.get("/reserva", response_class=HTMLResponse)
 async def reserva(request: Request):
-    return templates.TemplateResponse("reserva.html", {"request": request})
+    return templates.TemplateResponse("reserva.html", {"request": request, "mensagem": "Formulário de reserva disponível"})
 
 @app.get("/devolucao", response_class=HTMLResponse)
 async def devolucao(request: Request):
-    return templates.TemplateResponse("devolucao.html", {"request": request})
+    return templates.TemplateResponse("devolucao.html", {"request": request, "mensagem": "Formulário de devolução ativo"})
 
 @app.get("/prereservas", response_class=HTMLResponse)
 async def prereservas(request: Request):
     if not gestor_autenticado(request):
         return RedirectResponse("/login")
-    return templates.TemplateResponse("listar_prereservas.html", {"request": request})
+    return templates.TemplateResponse("listar_prereservas.html", {"request": request, "mensagem": "Reservas em breve serão listadas aqui."})
 
 @app.get("/prereservas/editar", response_class=HTMLResponse)
 async def editar(request: Request):
     if not gestor_autenticado(request):
         return RedirectResponse("/login")
-    return templates.TemplateResponse("editar_prereserva.html", {"request": request})
+    return templates.TemplateResponse("editar_prereserva.html", {"request": request, "mensagem": "Página de edição ativa."})
