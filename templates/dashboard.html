@@ -1,12 +1,47 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
-<h2>Dashboard</h2>
-<p>Gerencie suas operações de frota a partir daqui.</p>
-<ul>
-  <li><a href="/cadastro">Cadastrar Veículo</a></li>
-  <li><a href="/reserva">Reservar Veículo</a></li>
-  <li><a href="/devolucao">Devolver Veículo</a></li>
-  <li><a href="/prereservas">Ver Reservas</a></li>
-</ul>
+<h2 class="mb-4"><i class="bi bi-speedometer2"></i> Dashboard</h2>
+<div class="row g-4">
+  <div class="col-md-6 col-lg-3">
+    <a href="/cadastro" class="text-decoration-none">
+      <div class="card text-bg-primary h-100 shadow-sm text-center">
+        <div class="card-body">
+          <i class="bi bi-truck fs-1"></i>
+          <h5 class="card-title mt-2">Cadastrar Veículo</h5>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-6 col-lg-3">
+    <a href="/reserva" class="text-decoration-none">
+      <div class="card text-bg-success h-100 shadow-sm text-center">
+        <div class="card-body">
+          <i class="bi bi-calendar-check fs-1"></i>
+          <h5 class="card-title mt-2">Reservar Veículo</h5>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-6 col-lg-3">
+    <a href="/devolucao" class="text-decoration-none">
+      <div class="card text-bg-warning h-100 shadow-sm text-center">
+        <div class="card-body">
+          <i class="bi bi-arrow-repeat fs-1"></i>
+          <h5 class="card-title mt-2">Devolver Veículo</h5>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-6 col-lg-3">
+    <a href="/prereservas" class="text-decoration-none">
+      <div class="card text-bg-info h-100 shadow-sm text-center">
+        <div class="card-body">
+          <i class="bi bi-list-task fs-1"></i>
+          <h5 class="card-title mt-2">Ver Reservas</h5>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
 {% endblock %}
