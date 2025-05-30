@@ -1,23 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Devolução</h2>
-<form method="post">
-    <label>Placa do veículo:</label>
-    <input name="placa" required><br>
-    <label>Apresentou problema?</label>
-    <select name="problema">
-        <option>Não</option><option>Sim</option>
-    </select><br>
-    <label>Está limpo?</label>
-    <select name="limpo">
-        <option>Sim</option><option>Não</option>
-    </select><br>
-    <label>Abastecido?</label>
-    <select name="abastecido">
-        <option>Sim</option><option>Não</option>
-    </select><br>
-    <label>Observações:</label>
-    <textarea name="observacoes"></textarea><br>
-    <button type="submit">Devolver</button>
-</form>
-{% endblock %}
+<h2>Devolução</h2><form method="post">
+<label>Placa:</label><input name="placa" required><br>
+<label>Problema?</label><select name="problema"><option>Não</option><option>Sim</option></select>
+<label>Limpo?</label><select name="limpo"><option>Sim</option><option>Não</option></select>
+<label>Abastecido?</label><select name="abastecido"><option>Sim</option><option>Não</option></select>
+<label>Observações:</label><textarea name="observacoes"></textarea><br><button>Devolver</button></form>{% endblock %}

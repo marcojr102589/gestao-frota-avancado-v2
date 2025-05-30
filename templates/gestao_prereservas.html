@@ -1,16 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Gestão de Pré-Reservas</h2>
-<table>
-<tr><th>Nome</th><th>Origem</th><th>Destino</th><th>Data/Hora</th><th>Status</th></tr>
-{% for r in reservas %}
-<tr>
-<td>{{ r.nome_usuario }}</td>
-<td>{{ r.origem }}</td>
-<td>{{ r.destino }}</td>
-<td>{{ r.data_reserva }}</td>
-<td>{% if r.devolvido %}Devolvido{% else %}Aguardando{% endif %}</td>
-</tr>
-{% endfor %}
-</table>
-{% endblock %}
+<h2>Gestão de Pré-Reservas</h2><table><tr><th>Nome</th><th>Origem</th><th>Destino</th><th>Data</th><th>Status</th></tr>
+{% for r in reservas %}<tr><td>{{ r.nome_usuario }}</td><td>{{ r.origem }}</td><td>{{ r.destino }}</td><td>{{ r.data_reserva }}</td>
+<td>{% if r.devolvido %}Devolvido{% else %}Aguardando{% endif %}</td></tr>{% endfor %}</table>{% endblock %}

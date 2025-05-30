@@ -1,16 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Pré-Reserva</h2>
-<form method="post">
-    <label>Nome:</label>
-    <input name="nome_usuario" required><br>
-    <label>Origem:</label>
-    <input name="origem"><br>
-    <label>Destino:</label>
-    <input name="destino"><br>
-    <label>Data/Hora:</label>
-    <input type="datetime-local" name="data_retirada"><br>
-    <button type="submit">Pré-Reservar</button>
-</form>
-{% if mensagem %}<p>{{ mensagem }}</p>{% endif %}
-{% endblock %}
+<h2>Pré-Reserva</h2><form method="post">
+<label>Nome:</label><input name="nome_usuario" required><br>
+<label>Origem:</label><input name="origem"><br>
+<label>Destino:</label><input name="destino"><br>
+<label>Data/Hora:</label><input type="datetime-local" name="data_retirada"><br>
+<button>Pré-Reservar</button></form>{% if mensagem %}<p>{{ mensagem }}</p>{% endif %}{% endblock %}

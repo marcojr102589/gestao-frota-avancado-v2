@@ -1,10 +1,4 @@
 {% extends "base.html" %}
-{% block title %}Login Gestor{% endblock %}
 {% block content %}
-<form method="post" action="/login">
-    <label>Senha:</label>
-    <input type="password" name="senha">
-    <button type="submit">Entrar</button>
-</form>
-{% if erro %}<p style="color:red;">{{ erro }}</p>{% endif %}
-{% endblock %}
+<form method="post" action="/login"><label>Senha:</label><input type="password" name="senha"><button>Entrar</button></form>
+{% if erro %}<p style="color:red;">{{ erro }}</p>{% endif %}{% endblock %}

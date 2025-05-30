@@ -1,20 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Reserva de Veículo</h2>
-<form method="post">
-    <label>Nome:</label>
-    <input name="nome_usuario" required><br>
-    <label>Veículo:</label>
-    <select name="veiculo_id">
-        {% for v in veiculos_disponiveis %}
-        <option value="{{ v.id }}">{{ v.modelo }} - {{ v.placa }}</option>
-        {% endfor %}
-    </select><br>
-    <label>Data retirada:</label>
-    <input type="datetime-local" name="data_retirada"><br>
-    <label>Data devolução:</label>
-    <input type="datetime-local" name="data_devolucao"><br>
-    <button type="submit">Reservar</button>
-</form>
-{% if mensagem %}<p>{{ mensagem }}</p>{% endif %}
-{% endblock %}
+<h2>Reserva</h2><form method="post">
+<label>Nome:</label><input name="nome_usuario" required><br>
+<label>Veículo:</label><select name="veiculo_id">
+{% for v in veiculos_disponiveis %}<option value="{{ v.id }}">{{ v.modelo }} - {{ v.placa }}</option>{% endfor %}
+</select><br><label>Retirada:</label><input type="datetime-local" name="data_retirada">
+<label>Devolução:</label><input type="datetime-local" name="data_devolucao">
+<button>Reservar</button></form>{% if mensagem %}<p>{{ mensagem }}</p>{% endif %}{% endblock %}
